@@ -1,51 +1,44 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+""" N queens """
 import sys
 
-def print_usage_and_exit(message):
-    print(message)
-    sys.exit(1)
 
-def is_safe(board, row, col):
-    """
-    Check if placing a queen at (row, col) is safe.
-    This function checks the left side of the row, the upper diagonal, 
-    and the lower diagonal to ensure no queens attack each other.
-    """
-    for i in range(col):
-        if board[row] == i or abs(board[row] - i) == abs(row - board.index(i)):
-            return False
-    return True
+if len(sys.argv) > 2 or len(sys.argv) < 2:
+    print("Usage: nqueens N")
+    exit(1)
 
-def solve_nqueens(N, board=[], col=0):
-    """
-    Solve the N queens problem using backtracking.
-    This function attempts to place queens on the board and prints each valid configuration.
-    """
-    if col == N:
-        print([[i, board[i]] for i in range(N)])
-        return
+if not sys.argv[1].isdigit():
+    print("N must be a number")
+    exit(1)
 
-    for row in range(N):
-        board[col] = row
-        if is_safe(board, row, col):
-            solve_nqueens(N, board, col + 1)
-        board[col] = -1
+if int(sys.argv[1]) < 4:
+    print("N must be at least 4")
+    exit(1)
 
-def main():
-    # Validate command-line arguments
-    if len(sys.argv) != 2:
-        print_usage_and_exit("Usage: nqueens N")
-    try:
-        N = int(sys.argv[1])
-    except ValueError:
-        print_usage_and_exit("N must be a number")
+n = int(sys.argv[1])
 
-    if N < 4:
-        print_usage_and_exit("N must be at least 4")
 
-    # Initialize the board with -1 (empty positions)
-    board = [-1] * N
-    solve_nqueens(N, board)
+def queens(n, i=0, a=[], b=[], c=[]):
+    """ find possible positions """
+    if i < n:
+        for j in range(n):
+            if j not in a and i + j not in b and i - j not in c:
+                yield from queens(n, i + 1, a + [j], b + [i + j], c + [i - j])
+    else:
+        yield a
 
-if __name__ == "__main__":
-    main()
+
+def solve(n):
+    """ solve """
+    k = []
+    i = 0
+    for solution in queens(n, 0):
+        for s in solution:
+            k.append([i, s])
+            i += 1
+        print(k)
+        k = []
+        i = 0
+
+
+solve(n)
